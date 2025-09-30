@@ -1,1 +1,0 @@
-import{a as e,i as t,t as n}from"./index-DZRDTkWZ.js";t();var r=e(n());function i(){return(0,r.jsx)(`div`,{className:`font-display`,children:`Abouts`})}export{i as default};
