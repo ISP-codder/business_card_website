@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router'
-import { CONTACTS } from '../helpers/paths'
+import { CONTACTS } from '../helpers/paths.js'
 
 export default function Home() {
 	const sectionRefs = useRef([])
