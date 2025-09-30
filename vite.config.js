@@ -4,16 +4,17 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-	plugins: [
-		react({
-			babel: {
-				plugins: [['babel-plugin-react-compiler']]
-			}
-		}),
-		tailwindcss()
-	],
-	base: './',
+	plugins: [react(), tailwindcss()],
+	base: '/business_card_website/',
 	define: {
-		'process.env': process.env
+		'import.meta.env.VITE_EMAILJS_SERVICE_ID': JSON.stringify(
+			process.env.VITE_EMAILJS_SERVICE_ID
+		),
+		'import.meta.env.VITE_EMAILJS_TEMPLATE_ID': JSON.stringify(
+			process.env.VITE_EMAILJS_TEMPLATE_ID
+		),
+		'import.meta.env.VITE_EMAILJS_PUBLIC_KEY': JSON.stringify(
+			process.env.VITE_EMAILJS_PUBLIC_KEY
+		)
 	}
 })
