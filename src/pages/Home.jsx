@@ -36,14 +36,14 @@ export default function Home() {
 			title: 'Miro copy',
 			description: 'A front-end app that helps you visualize your thoughts',
 			tags: ['React', 'Zod', 'TailwindCSS', 'React Hook Form'],
-			image: '../public/miro.png'
+			image: '/miro.png'
 		},
 		{
 			title: '3D-globe',
 			description:
 				'A replica of the globe on which you can add memorable places from your life',
 			tags: ['JavaScript', 'CesiumJS', 'Redux Toolkit'],
-			image: '../public/globe.png'
+			image: '/globe.png'
 		}
 	]
 
@@ -99,7 +99,7 @@ export default function Home() {
 								<div className='w-full h-full flex items-center justify-center text-gray-600 dark:text-gray-300 text-sm font-sans'>
 									<div className='text-center'>
 										<img
-											src={'../public/photo_2025-09-29_22-45-14.jpg'}
+											src={'/photo_2025-09-29_22-45-14.jpg'}
 											alt={'Daniil Tkachenko'}
 											className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
 										/>

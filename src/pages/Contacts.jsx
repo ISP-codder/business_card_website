@@ -3,8 +3,8 @@ import emailjs from '@emailjs/browser'
 
 export default function Contacts() {
 	const [formData, setFormData] = useState({
-		from_name: '', // Исправлено имя поля
-		from_email: '', // Исправлено имя поля
+		from_name: '',
+		from_email: '',
 		subject: '',
 		message: ''
 	})
@@ -16,48 +16,38 @@ export default function Contacts() {
 	const sectionRefs = useRef([])
 	const formRef = useRef()
 
-	// Инициализация EmailJS (замените на ваши данные)
+	// Безопасная загрузка конфигурации
 	const EMAILJS_CONFIG = {
-		SERVICE_ID: 'YOUR_SERVICE_ID',
-		TEMPLATE_ID: 'YOUR_TEMPLATE_ID',
-		PUBLIC_KEY: 'YOUR_PUBLIC_KEY'
+		SERVICE_ID: import.meta.env.VITE_EMAILJS_SERVICE_ID || '',
+		TEMPLATE_ID: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '',
+		PUBLIC_KEY: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
 	}
 
+	// Проверка конфигурации при загрузке
 	useEffect(() => {
-		const observer = new IntersectionObserver(
-			entries => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('animate-fade-in-up')
-					}
-				})
-			},
-			{ threshold: 0.1 }
-		)
-
-		sectionRefs.current.forEach(ref => {
-			if (ref) observer.observe(ref)
-		})
-
-		return () => observer.disconnect()
-	}, [])
-
-	const addToRefs = el => {
-		if (el && !sectionRefs.current.includes(el)) {
-			sectionRefs.current.push(el)
+		if (
+			!EMAILJS_CONFIG.SERVICE_ID ||
+			!EMAILJS_CONFIG.TEMPLATE_ID ||
+			!EMAILJS_CONFIG.PUBLIC_KEY
+		) {
+			console.warn('EmailJS configuration is missing. Form will not work.')
 		}
-	}
-
-	const handleChange = e => {
-		setFormData({
-			...formData,
-			[e.target.name]: e.target.value
-		})
-		if (submitStatus) setSubmitStatus('')
-	}
+	}, [])
 
 	const handleSubmit = async e => {
 		e.preventDefault()
+
+		// Проверка конфигурации перед отправкой
+		if (
+			!EMAILJS_CONFIG.SERVICE_ID ||
+			!EMAILJS_CONFIG.TEMPLATE_ID ||
+			!EMAILJS_CONFIG.PUBLIC_KEY
+		) {
+			setSubmitStatus('error')
+			setTimeout(() => setSubmitStatus(''), 5000)
+			return
+		}
+
 		setIsSubmitting(true)
 		setSubmitStatus('sending')
 
@@ -69,20 +59,14 @@ export default function Contacts() {
 				EMAILJS_CONFIG.PUBLIC_KEY
 			)
 
-			console.log('Email sent successfully:', result)
 			setSubmitStatus('success')
 			setFormData({ from_name: '', from_email: '', subject: '', message: '' })
 
-			setTimeout(() => {
-				setSubmitStatus('')
-			}, 5000)
+			setTimeout(() => setSubmitStatus(''), 5000)
 		} catch (error) {
 			console.error('Error sending email:', error)
 			setSubmitStatus('error')
-
-			setTimeout(() => {
-				setSubmitStatus('')
-			}, 5000)
+			setTimeout(() => setSubmitStatus(''), 5000)
 		} finally {
 			setIsSubmitting(false)
 		}
@@ -398,6 +382,9 @@ export default function Contacts() {
 											<div
 												key={index}
 												className='w-full flex items-center group p-3 rounded-xl'>
+												<div className='w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-xl mr-4'>
+													{method.icon}
+												</div>
 												<div className='flex-1 text-left'>
 													<h3 className='font-semibold text-gray-900 dark:text-white'>
 														{method.title}
