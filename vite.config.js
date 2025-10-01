@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [react(), tailwindcss()],
-	base: '/business_card_website/',
+	base: '/',
 	define: {
 		'import.meta.env.VITE_EMAILJS_SERVICE_ID': JSON.stringify(
 			process.env.VITE_EMAILJS_SERVICE_ID
