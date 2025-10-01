@@ -16,38 +16,47 @@ export default function Contacts() {
 	const sectionRefs = useRef([])
 	const formRef = useRef()
 
-	// Безопасная загрузка конфигурации
 	const EMAILJS_CONFIG = {
-		SERVICE_ID: import.meta.env.VITE_EMAILJS_SERVICE_ID || '',
-		TEMPLATE_ID: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '',
-		PUBLIC_KEY: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
+		SERVICE_ID: 'service_5rhntnf',
+		TEMPLATE_ID: 'template_ouqxzcg',
+		PUBLIC_KEY: 's7tWrlsG98_EfKLtt'
 	}
 
-	// Проверка конфигурации при загрузке
 	useEffect(() => {
-		if (
-			!EMAILJS_CONFIG.SERVICE_ID ||
-			!EMAILJS_CONFIG.TEMPLATE_ID ||
-			!EMAILJS_CONFIG.PUBLIC_KEY
-		) {
-			console.warn('EmailJS configuration is missing. Form will not work.')
-		}
+		const observer = new IntersectionObserver(
+			entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('animate-fade-in-up')
+					}
+				})
+			},
+			{ threshold: 0.1 }
+		)
+
+		sectionRefs.current.forEach(ref => {
+			if (ref) observer.observe(ref)
+		})
+
+		return () => observer.disconnect()
 	}, [])
+
+	const addToRefs = el => {
+		if (el && !sectionRefs.current.includes(el)) {
+			sectionRefs.current.push(el)
+		}
+	}
+
+	const handleChange = e => {
+		setFormData({
+			...formData,
+			[e.target.name]: e.target.value
+		})
+		if (submitStatus) setSubmitStatus('')
+	}
 
 	const handleSubmit = async e => {
 		e.preventDefault()
-
-		// Проверка конфигурации перед отправкой
-		if (
-			!EMAILJS_CONFIG.SERVICE_ID ||
-			!EMAILJS_CONFIG.TEMPLATE_ID ||
-			!EMAILJS_CONFIG.PUBLIC_KEY
-		) {
-			setSubmitStatus('error')
-			setTimeout(() => setSubmitStatus(''), 5000)
-			return
-		}
-
 		setIsSubmitting(true)
 		setSubmitStatus('sending')
 
@@ -59,20 +68,25 @@ export default function Contacts() {
 				EMAILJS_CONFIG.PUBLIC_KEY
 			)
 
+			console.log('Email sent successfully:', result)
 			setSubmitStatus('success')
 			setFormData({ from_name: '', from_email: '', subject: '', message: '' })
 
-			setTimeout(() => setSubmitStatus(''), 5000)
+			setTimeout(() => {
+				setSubmitStatus('')
+			}, 5000)
 		} catch (error) {
 			console.error('Error sending email:', error)
 			setSubmitStatus('error')
-			setTimeout(() => setSubmitStatus(''), 5000)
+
+			setTimeout(() => {
+				setSubmitStatus('')
+			}, 5000)
 		} finally {
 			setIsSubmitting(false)
 		}
 	}
 
-	// Функция для копирования в буфер обмена
 	const copyToClipboard = async (text, fieldName) => {
 		try {
 			await navigator.clipboard.writeText(text)
@@ -83,7 +97,6 @@ export default function Contacts() {
 			}, 2000)
 		} catch (err) {
 			console.error('Failed to copy: ', err)
-			// Fallback для старых браузеров
 			const textArea = document.createElement('textarea')
 			textArea.value = text
 			document.body.appendChild(textArea)
@@ -98,45 +111,45 @@ export default function Contacts() {
 		}
 	}
 
-	// Реальные контактные данные (замените на свои)
 	const contactMethods = [
 		{
-			icon: '📧',
 			title: 'Email',
 			value: 'daniil.tkachenko.05@mail.ru',
 			field: 'email',
 			copyable: true
 		},
 		{
-			icon: '📱',
 			title: 'Phone',
 			value: '+7 (989) 616-97-88',
 			field: 'phone',
 			copyable: true
 		},
 		{
-			icon: '📍',
 			title: 'Location',
 			value: 'Rostov-on-Don, Russia',
 			field: 'location',
-			copyable: false // Местоположение не копируется
+			copyable: false
 		}
 	]
 
 	const socialLinks = [
 		{
 			name: 'GitHub',
-			url: 'https://github.com/ISP-codder',
-			username: '@ISP-codder'
+			url: 'https://github.com/yourusername',
+			username: '@yourusername'
+		},
+		{
+			name: 'LinkedIn',
+			url: 'https://linkedin.com/in/yourprofile',
+			username: '@yourprofile'
 		},
 		{
 			name: 'Telegram',
-			url: 'https://t.me/danya77723',
-			username: '@danya77723'
+			url: 'https://t.me/yourusername',
+			username: '@yourusername'
 		}
 	]
 
-	// Статус сообщения
 	const getStatusMessage = () => {
 		switch (submitStatus) {
 			case 'sending':
@@ -197,7 +210,6 @@ export default function Contacts() {
 				}
 			`}</style>
 
-			{/* Hero Section */}
 			<section className='pt-24 pb-16 px-6 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900'>
 				<div className='max-w-4xl mx-auto text-center'>
 					<h1 className='text-5xl font-bold text-gray-900 dark:text-white mb-6 font-sans'>
@@ -210,11 +222,9 @@ export default function Contacts() {
 				</div>
 			</section>
 
-			{/* Main Content */}
 			<section className='py-16 px-6'>
 				<div className='max-w-6xl mx-auto'>
 					<div className='grid lg:grid-cols-2 gap-12'>
-						{/* Contact Form */}
 						<div
 							ref={addToRefs}
 							className='bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700'>
@@ -222,7 +232,6 @@ export default function Contacts() {
 								Send Me a Message
 							</h2>
 
-							{/* Status Message */}
 							{status && (
 								<div
 									className={`mb-6 p-4 rounded-xl border ${
@@ -253,11 +262,11 @@ export default function Contacts() {
 											type='text'
 											id='from_name'
 											name='from_name'
-											value={formData.from_name} // Исправлено
+											value={formData.from_name}
 											onChange={handleChange}
 											required
 											className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300'
-											placeholder='Your Name'
+											placeholder='John Doe'
 										/>
 									</div>
 
@@ -271,11 +280,11 @@ export default function Contacts() {
 											type='email'
 											id='from_email'
 											name='from_email'
-											value={formData.from_email} // Исправлено
+											value={formData.from_email}
 											onChange={handleChange}
 											required
 											className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300'
-											placeholder='name@example.com'
+											placeholder='john@example.com'
 										/>
 									</div>
 								</div>
@@ -334,9 +343,7 @@ export default function Contacts() {
 							</form>
 						</div>
 
-						{/* Contact Information */}
 						<div className='space-y-8'>
-							{/* Contact Methods */}
 							<div
 								ref={addToRefs}
 								className='bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700'>
@@ -347,7 +354,6 @@ export default function Contacts() {
 								<div className='space-y-6'>
 									{contactMethods.map((method, index) =>
 										method.copyable ? (
-											// Копируемые поля (email, телефон)
 											<button
 												key={index}
 												onClick={() =>
@@ -378,13 +384,9 @@ export default function Contacts() {
 												</div>
 											</button>
 										) : (
-											// Некопируемые поля (местоположение)
 											<div
 												key={index}
 												className='w-full flex items-center group p-3 rounded-xl'>
-												<div className='w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-xl mr-4'>
-													{method.icon}
-												</div>
 												<div className='flex-1 text-left'>
 													<h3 className='font-semibold text-gray-900 dark:text-white'>
 														{method.title}
@@ -398,15 +400,13 @@ export default function Contacts() {
 									)}
 								</div>
 
-								{/* Инструкция */}
 								<div className='mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800'>
 									<p className='text-blue-800 dark:text-blue-300 text-sm text-center'>
-										👆 Click on email or phone to copy
+										Click on email or phone to copy
 									</p>
 								</div>
 							</div>
 
-							{/* Social Links */}
 							<div
 								ref={addToRefs}
 								className='bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700'>
@@ -423,9 +423,6 @@ export default function Contacts() {
 											rel='noopener noreferrer'
 											className='flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift group border border-gray-200 dark:border-gray-600'>
 											<div className='flex items-center'>
-												<span className='text-2xl mr-3 group-hover:scale-110 transition-transform duration-300'>
-													{social.icon}
-												</span>
 												<div>
 													<div className='font-semibold text-gray-900 dark:text-white'>
 														{social.name}
@@ -443,11 +440,9 @@ export default function Contacts() {
 								</div>
 							</div>
 
-							{/* Response Time */}
 							<div
 								ref={addToRefs}
 								className='bg-gradient-to-br from-gray-900 to-black dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 text-white'>
-								<div className='text-4xl mb-4'>⚡</div>
 								<h3 className='text-xl font-bold mb-2'>Fast Response</h3>
 								<p className='text-gray-300 text-sm leading-relaxed'>
 									I typically respond to all messages within 24 hours. For
